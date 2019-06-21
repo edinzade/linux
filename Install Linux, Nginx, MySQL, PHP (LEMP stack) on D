@@ -1,0 +1,84 @@
+Install Linux, Nginx, MySQL, PHP (LEMP stack) on Debian 9
+
+
+Step 1 — Installing the Nginx Web Server
+
+sudo apt update
+sudo apt install nginx
+
+
+You should enable the most restrictive profile that will still allow the traffic you want. Since we haven't configured SSL for our server yet, in this guide, we will only need to allow traffic on port 80.
+
+
+sudo ufw allow 'Nginx HTTP'
+
+sudo ufw status
+
+
+You should see HTTP traffic allowed in the displayed output:
+
+Output
+Status: active
+
+To                         Action      From
+--                         ------      ----
+OpenSSH                    ALLOW       Anywhere
+Nginx HTTP                 ALLOW       Anywhere
+OpenSSH (v6)               ALLOW       Anywhere (v6)
+Nginx HTTP (v6)            ALLOW       Anywhere (v6)
+
+
+
+
+Now, test if the server is up and running by accessing your server's domain name or public IP address in your web browser. If you do not have a domain name pointed at your server and you do not know your server's public IP address, you can find it by typing one of the following into your terminal:
+
+
+
+
+ip addr show eth0 | grep inet | awk '{ print $2; }' | sed 's/\/.*$//'
+
+
+
+
+Type one of the addresses that you receive in your web browser. It should take you to Nginx's default landing page:
+
+
+http://your_domain_or_IP
+
+
+
+
+
+Step 2 — Installing MySQL to Manage Site Data
+
+
+
+
+sudo apt install mysql-server
+
+sudo mysql_secure_installation
+
+
+Step 3 — Installing PHP for Processing
+
+
+
+We now have Nginx installed to serve our pages and MySQL installed to store and manage our data. However, we still don't have anything that can generate dynamic content. That's where PHP comes in.
+
+Since Nginx does not contain native PHP processing like some other web servers, we will need to install fpm, which stands for "fastCGI process manager". We will tell Nginx to pass PHP requests to this software for processing. We'll also install an additional helper package that will allow PHP to communicate with our MySQL database backend. The installation will pull in the necessary PHP core files to make that work.
+
+Then install the php-fpm and php-mysql packages:
+
+sudo apt install php-fpm php-mysql
+
+
+
+
+Step 4 — Configuring Nginx to Use the PHP Processor
+
+
+sudo mkdir /var/www/your_domain
+sudo systemctl reload nginx
+
+
+Step 5 — Create a PHP File to Test Configuration
